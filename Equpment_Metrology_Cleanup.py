@@ -38,13 +38,12 @@ temp.columns
 # %%
 temp = temp.loc[:,['Location', 'Type', 'Serial #', 'Description', 'Cal. Date', 'Cal. due Date',
                    'Comment', 'Owner']]
-temp.head()
+
 
 # %%
 temp.dropna()
 
 # %%
-temp.head()
 
 # %%
 temp.to_csv('Equipment and Metrology.csv', index=True)
@@ -75,17 +74,6 @@ def search(data, column, search_term):
         return df.iloc[indexes]
     else:
         return []
-
-# %%
-
-with st.sidebar("inputs"):
-    key = st.selectbox["Key", ['ID Number', 'Location', 'Serial Number', 'Description', 'Cal. Date', 'Cal. due Date', 'Owner']]
-    search_term = st.text_input("Search")
-    if key != '' and search_term != '':
-        df = search(df, key, search_term)
-    if not df.empty:
-        st.dataframe(df)
-    else:
-        st.write('Did not find any matching criteria')
+    
 
 
