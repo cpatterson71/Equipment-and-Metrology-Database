@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-from st_aggrid import AgGrid
+# from st_aggrid import AgGrid
 #import boto3
 
 # s3 = boto3.client('s3',
@@ -50,6 +50,6 @@ col2, col3 = st.columns([1000,100])
 
 with col2 :
     if not df.empty:
-        AgGrid(df, height=500, use_container_width=True)
+        st.dataframe(df)
     else:
         st.write('Did not find any item matching the critieria')
