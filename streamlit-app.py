@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
+import datetime
 # from st_aggrid import AgGrid
 #import boto3
 
@@ -35,7 +36,9 @@ def search(data, column, search_term):
     else:
         return []
     
-col2, col3 = st.columns([20, 20])
+
+       
+col2, col3, col4 = st.columns([20, 20, 20])
   
 with col2:
     key = st.sidebar.selectbox("Key",['Location', 'Type', 'Serial #', 'Description', 'Cal. Date',
@@ -46,10 +49,20 @@ with col3:
     if key != '' and search_term !="":
         df = search(data, key, search_term)
 
-col2, col3 = st.columns([1000,100])
+with col4:
+    start_date = st.sidebar.date_input('Start Date')
+    end_date = st.sidebar.date_input('End Date')
 
-with col2 :
-    if not df.empty:
-        st.dataframe(df)
+    if start_date > end_date:
+       st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
     else:
-        st.write('Did not find any item matching the critieria')
+        st.error('Error: End date must fall after start date.')
+    
+
+# col2, col3 = st.columns([1000,100])
+
+# with col2 :
+#     if not df.empty:
+#         st.dataframe(df)
+#     else:
+#         st.write('Did not find any item matching the critieria')
