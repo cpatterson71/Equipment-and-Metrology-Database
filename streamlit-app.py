@@ -2,7 +2,8 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-import datetime
+import datetime as dt
+
 # from st_aggrid import AgGrid
 #import boto3
 
@@ -13,18 +14,15 @@ import datetime
 # s3.download_file('carldata', 'My_Equipment_file.xlsx', 'My_Equiptment_file.xlsx')
 # file = 'My_Equipment_File.xlsx'
 
-data = pd.read_csv('Equipment and Metrology.csv', index_col=False)
-temp = pd.DataFrame(data)
-
 st.set_page_config(layout='wide')
 st.title('Equipment and Metrology Database')
 
 @st.cache
 def load_data():
-    df = pd.read_csv('Equipment and Methrology.csv', index_col=False)
-    return df
+    data = pd.read_csv('Equipment and Methrology.csv', index_col=False)
+    return data
 
-df = load_data
+data = load_data
 
 def search(data, column, search_term):
     if column =='Owner':
@@ -35,10 +33,8 @@ def search(data, column, search_term):
         return data.iloc[indexes]
     else:
         return []
-    
-
-       
-col2, col3, col4 = st.columns([20, 20, 20])
+          
+buffer, col2, col3 = st.columns([20, 20, 20])
   
 with col2:
     key = st.sidebar.selectbox("Key",['Location', 'Type', 'Serial #', 'Description', 'Cal. Date',
@@ -46,23 +42,23 @@ with col2:
 
 with col3:
     search_term = st.sidebar.text_input('Search')
-    if key != '' and search_term !="":
+    if key != '' and search_term !='':
         df = search(data, key, search_term)
 
-with col4:
-    start_date = st.sidebar.date_input('Start Date')
-    end_date = st.sidebar.date_input('End Date')
+# with col4:
+#     start_date = st.sidebar.date_input('Start Date')
+#     end_date = st.sidebar.date_input('End Date')
 
-    if start_date > end_date:
-       st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
-    else:
-        st.error('Error: End date must fall after start date.')
+    # if start_date > end_date:
+    #    st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
+    # else:
+    #     st.error('Error: End date must fall after start date.')
     
 
-# col2, col3 = st.columns([1000,100])
+buffer, col1 = st.columns([1000,100])
 
-# with col2 :
-#     if not df.empty:
-#         st.dataframe(df)
-#     else:
-#         st.write('Did not find any item matching the critieria')
+with col1 :
+    if not df.empty:
+        st.dataframe(df)
+    else:
+        st.write('Did not find any item matching the critieria')
