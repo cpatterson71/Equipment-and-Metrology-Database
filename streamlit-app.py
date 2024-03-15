@@ -2,10 +2,10 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-import datetime as dt
+#import datetime as dt
 
-#from st_aggrid import AgGrid
-#import boto3
+from st_aggrid import AgGrid
+# import boto3
 
 # s3 = boto3.client('s3',
 #                   aws_access_key_id = 'AKIASCPKVVLRRR24MAEI',
@@ -13,16 +13,21 @@ import datetime as dt
 #                     )
 # s3.download_file('carldata', 'My_Equipment_file.xlsx', 'My_Equiptment_file.xlsx')
 # file = 'My_Equipment_File.xlsx'
+# excel = pd.read_excel('Equipment_and_Metrology_Database.xlsx', index_col=False)
+# temp = pd.DataFrame(excel)
 
 st.set_page_config(layout='wide')
 st.title('Equipment and Metrology Database')
 
+file = 'Equipment_and_Metrology_Database.xlsx'
+data = pd.read_excel(file, index_col=False)
+
 @st.cache
 def load_data():
-    data = pd.read_csv('Equipment and Methrology.csv', index_col=False)
-    return data
+    df = data
+    return df
 
-data = load_data
+df = load_data
 
 def search(data, column, search_term):
     if column =='Owner':
@@ -55,10 +60,10 @@ with col3:
     #     st.error('Error: End date must fall after start date.')
     
 
-buffer, col1 = st.columns([1000,100])
+buffer, col1 = st.columns([1,100])
 
 with col1 :
     if not data.empty:
-        st.dataframe(df)
+        AgGrid(data, height=500, editable=False, use_container_width=True)
     else:
         st.write('Did not find any item matching the critieria')
