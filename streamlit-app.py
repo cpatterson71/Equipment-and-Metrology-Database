@@ -38,28 +38,38 @@ def search(data, column, search_term):
         return data.iloc[indexes]
     else:
         return []
+
+# def date_time(data):
+#     if st.button(start_date > end_date):
+#        st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
+#        indexes = data.date_range(start=start_date, end=end_date).index
+#        if indexes.size > 0:
+#            return data.iloc[indexes]
+#        else:
+#            return []
+       
+#     else:
+#         st.error('Error: End date must fall after start date.')
           
-buffer, col2, col3, col4 = st.columns([20, 20, 20, 20])
-  
-with col2:
+buffer, col3, col4 = st.columns([20, 20, 20])
+
+# with col2:
+#     start_date = st.sidebar.date_input('Start Date')
+#     end_date = st.sidebar.date_input('End Date')
+
+#     st.sidebar.button('Enter', type='primary')
+#     df = date_time(data)
+
+with col3:
     key = st.sidebar.selectbox("Key",['Location', 'Type', 'Serial #', 'Description', 'Cal. Date',
                                       'Cal. due Date', 'Comment', 'Owner'])
 
-with col3:
+with col4:
     search_term = st.sidebar.text_input('Search')
     if key != '' and search_term !='':
         df = search(data, key, search_term)
 
-with col4:
-    start_date = st.sidebar.date_input('Start Date')
-    end_date = st.sidebar.date_input('End Date')
-
-    if start_date > end_date:
-       st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
-       df = search(data, key, search_term)
-    else:
-        st.error('Error: End date must fall after start date.')
-    
+    # st.button.sidebar('Enter', type='primary')    
 
 buffer, col1 = st.columns([1,100])
 
