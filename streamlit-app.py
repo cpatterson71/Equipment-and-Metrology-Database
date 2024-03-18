@@ -39,7 +39,7 @@ def search(data, column, search_term):
     else:
         return []
           
-buffer, col2, col3 = st.columns([20, 20, 20])
+buffer, col2, col3, col4 = st.columns([20, 20, 20, 20])
   
 with col2:
     key = st.sidebar.selectbox("Key",['Location', 'Type', 'Serial #', 'Description', 'Cal. Date',
@@ -50,14 +50,15 @@ with col3:
     if key != '' and search_term !='':
         df = search(data, key, search_term)
 
-# with col4:
-#     start_date = st.sidebar.date_input('Start Date')
-#     end_date = st.sidebar.date_input('End Date')
+with col4:
+    start_date = st.sidebar.date_input('Start Date')
+    end_date = st.sidebar.date_input('End Date')
 
-    # if start_date > end_date:
-    #    st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
-    # else:
-    #     st.error('Error: End date must fall after start date.')
+    if start_date > end_date:
+       st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
+       df = search(data, key, search_term)
+    else:
+        st.error('Error: End date must fall after start date.')
     
 
 buffer, col1 = st.columns([1,100])
