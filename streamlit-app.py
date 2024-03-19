@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-#import datetime as dt
+import datetime
 
 from st_aggrid import AgGrid
 # import boto3
@@ -38,6 +38,22 @@ def search(data, column, search_term):
         return data.iloc[indexes]
     else:
         return []
+    
+ss = st.session_state
+ss.analysis = {"filter":{}}
+
+def updateDateRange():
+    if 'dateRange' is ss and isinstance(ss.dateRange, tuple) and len(ss.dateRange)==2:
+        st.write("##########")
+        ss["analysis"]["filter"]['dateRange'] = (ss.dateRange[0].strftime("%YYYY-%DD-%MM"), ss.dateRange[1].strftime("%YYYY-%DD-%MM"))
+
+base = datetime.date(2022,7,1)
+dates = [base + datetime.timedelta(days=x) for x in range(5)]
+
+if "dateRange" not in ss:
+    ss.defaultDateRange = (dates[0], dates[-1])
+
+
 
 # def date_time(data):
 #     if st.button(start_date > end_date):
@@ -51,7 +67,20 @@ def search(data, column, search_term):
 #     else:
 #         st.error('Error: End date must fall after start date.')
           
-buffer, col3, col4 = st.columns([20, 20, 20])
+buffer, col2, col3, col4 = st.columns([20, 20, 20, 20])
+
+with col2:
+    st.sidebar.date_input(
+        label='Select date range',
+        value=ss.defaultDateRange,
+        min_value=dates[0],
+        max_value=datetime.date.today(),
+        key="dateRange",
+        on_change=updateDateRange)
+    
+    if isinstance(ss.dateRange,tuple) and len(ss.dateRange)==2 and "dateRange" not in ss["analysis"]["filter"]:
+       ss["analysis"]["filter"]["dateRange"] = (ss.dateRange[0].strftime("%YYYY-%DD-%MM"), ss.dateRange[1].strftime("%YYYY-%DD-%MM"))
+        
 
 # with col2:
 #     start_date = st.sidebar.date_input('Start Date')
@@ -67,7 +96,7 @@ with col3:
 with col4:
     search_term = st.sidebar.text_input('Search')
     if key != '' and search_term !='':
-        df = search(data, key, search_term)
+        df = search(data, key, search_term) 
 
     # st.button.sidebar('Enter', type='primary')    
 
