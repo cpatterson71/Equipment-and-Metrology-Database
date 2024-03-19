@@ -28,30 +28,29 @@ def load_data():
     return df
 
 df = load_data
-
-def search(data, column, search_term):
-    if column =='Owner':
-        search_term = (search_term)
-
-    indexes = data.loc[data[column].isin([search_term])].index
-    if indexes.size > 0:
-        return data.iloc[indexes]
-    else:
-        return []
-    
-def df_filter(message, df):
+  
+def df_filter(message, data):
     dates_selection = st.sidebar.slider('%s' % (message),
-                               min_value = min(df['Date']),
-                               max_value = max(df['Date']),
-                               value =(min(df['Date']),max(df['Date'])))
-    mask = df['Date'].between(dates_selection)
-    number_of_result= df[mask].shape[0]
-    filtered_df = df[mask]
+                               min_value = min(df['Cal. Due Date']),
+                               max_value = max(df['Cal. Due Date']),
+                               value =(min(df['Cal. Due Date']),max(df['Cal. Due Date'])))
+    mask = data['Date'].between(dates_selection)
+    filtered_df = data[mask].shape[0]
     return filtered_df
 
 
-filtered_df = df_filter('Move sliders to filter data', df)
-filtered_df.sort_values(by='Date', inplace=True)
+# def search(data, column, search_term):
+#     if column =='Owner':
+#         search_term = (search_term)
+
+#     indexes = data.loc[data[column].isin([search_term])].index
+#     if indexes.size > 0:
+#         return data.iloc[indexes]
+#     else:
+#         return []
+
+# filtered_df = df_filter('Move sliders to filter data', df)
+# filtered_df.sort_values(by='Date', inplace=True)
 
 # ss = st.session_state
 # ss.analysis = {"filter":{}}
@@ -81,10 +80,19 @@ filtered_df.sort_values(by='Date', inplace=True)
 #     else:
 #         st.error('Error: End date must fall after start date.')
           
-buffer, col2, col3, col4 = st.columns([20, 20, 20, 20])
+col2, col3, col4 = st.columns([20, 20, 20])
 
 with col2:
-    AgGrid(df, height=500, editable=False, use_container_width=True)
+    df_filter
+
+buffer, col1 = st.columns([1,100])
+
+with col1:
+    if not data.empty:
+        AgGrid(df, height=500, editable=False, use_container_width=True)
+    else:
+        st.write('Did not find any item matching the critieria')
+        
         
 
 # with col2:
@@ -105,10 +113,10 @@ with col4:
 
     # st.button.sidebar('Enter', type='primary')    
 
-buffer, col1 = st.columns([1,100])
+# buffer, col1 = st.columns([1,100])
 
-with col1 :
-    if not data.empty:
-        AgGrid(data, height=500, editable=False, use_container_width=True)
-    else:
-        st.write('Did not find any item matching the critieria')
+# with col1 :
+#     if not data.empty:
+#         AgGrid(data, height=500, editable=False, use_container_width=True)
+#     else:
+#         st.write('Did not find any item matching the critieria')
