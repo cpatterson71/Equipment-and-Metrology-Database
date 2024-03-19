@@ -39,19 +39,33 @@ def search(data, column, search_term):
     else:
         return []
     
-ss = st.session_state
-ss.analysis = {"filter":{}}
+def df_filter(message, df):
+    dates_selection = st.sidebar.slider('%s' % (message),
+                               min_value = min(df['Date']),
+                               max_value = max(df['Date']),
+                               value =(min(df['Date']),max(df['Date'])))
+    mask = df['Date'].between(dates_selection)
+    number_of_result= df[mask].shape[0]
+    filtered_df = df[mask]
+    return filtered_df
 
-def updateDateRange():
-    if 'dateRange' is ss and isinstance(ss.dateRange, tuple) and len(ss.dateRange)==2:
-        st.write("##########")
-        ss["analysis"]["filter"]['dateRange'] = (ss.dateRange[0].strftime("%YYYY-%DD-%MM"), ss.dateRange[1].strftime("%YYYY-%DD-%MM"))
 
-base = datetime.date(2022,7,1)
-dates = [base + datetime.timedelta(days=x) for x in range(5)]
+filtered_df = df_filter('Move sliders to filter data', df)
+filtered_df.sort_values(by='Date', inplace=True)
 
-if "dateRange" not in ss:
-    ss.defaultDateRange = (dates[0], dates[-1])
+# ss = st.session_state
+# ss.analysis = {"filter":{}}
+
+# def updateDateRange():
+#     if 'dateRange' is ss and isinstance(ss.dateRange, tuple) and len(ss.dateRange)==2:
+#         st.write("##########")
+#         ss["analysis"]["filter"]['dateRange'] = (ss.dateRange[0].strftime("%YYYY-%DD-%MM"), ss.dateRange[1].strftime("%YYYY-%DD-%MM"))
+
+# base = datetime.date(2022,7,1)
+# dates = [base + datetime.timedelta(days=x) for x in range(5)]
+
+# if "dateRange" not in ss:
+#     ss.defaultDateRange = (dates[0], dates[-1])
 
 
 
@@ -70,16 +84,7 @@ if "dateRange" not in ss:
 buffer, col2, col3, col4 = st.columns([20, 20, 20, 20])
 
 with col2:
-    st.sidebar.date_input(
-        label='Select date range',
-        value=ss.defaultDateRange,
-        min_value=dates[0],
-        max_value=datetime.date.today(),
-        key="dateRange",
-        on_change=updateDateRange)
-    
-    if isinstance(ss.dateRange,tuple) and len(ss.dateRange)==2 and "dateRange" not in ss["analysis"]["filter"]:
-       ss["analysis"]["filter"]["dateRange"] = (ss.dateRange[0].strftime("%YYYY-%DD-%MM"), ss.dateRange[1].strftime("%YYYY-%DD-%MM"))
+    AgGrid(df, height=500, editable=False, use_container_width=True)
         
 
 # with col2:
