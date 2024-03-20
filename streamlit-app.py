@@ -48,13 +48,13 @@ def date_range(df):
         else:
              return []
         
-date_string = date_picker(picker_type=PickerType.time.string_value, value=0, unit=Unit.days.string_value,
-                          key='date_picker')
+# date_string = date_range_picker(picker_type=PickerType.time.string_value, value=0, unit=Unit.days.string_value,
+#                           key='date_picker')
 
 
-if date_string is not None:
-    st.write('Date Picker: ', date_string)
-    
+# if date_string is not None:
+#     st.write('Date Picker: ', date_string)
+
 # def df_filter(message, data):
 #     dates_selection = st.sidebar.slider('%s' % (message),
 #                                min_value = min(df['Cal. Due Date']),
@@ -63,10 +63,6 @@ if date_string is not None:
 #     mask = data['Date'].between(dates_selection)
 #     filtered_df = data[mask].shape[0]
 #     return filtered_df
-
-
-
-
 # def search(data, column, search_term):
 #     if column =='Owner':
 #         search_term = (search_term)
@@ -115,7 +111,7 @@ if date_string is not None:
 buffer, col1 = st.columns([1,100])
 
 with col1:
-        if date_range is not None:
+        if date_range_string is not None:
             df = AgGrid(data, height=500, editable=False, use_container_width=True)
         else:
             st.write('Did not find any item matching the critieria')
