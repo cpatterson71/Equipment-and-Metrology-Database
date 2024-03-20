@@ -47,7 +47,14 @@ def date_range(df):
              return df.loc[indexes]
         else:
              return []
+        
+date_string = date_picker(picker_type=PickerType.time.string_value, value=0, unit=Unit.days.string_value,
+                          key='date_picker')
 
+
+if date_string is not None:
+    st.write('Date Picker: ', date_string)
+    
 # def df_filter(message, data):
 #     dates_selection = st.sidebar.slider('%s' % (message),
 #                                min_value = min(df['Cal. Due Date']),
