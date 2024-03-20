@@ -32,6 +32,7 @@ date_range_string = date_range_picker(picker_type=PickerType.date.string_value,
                                       start=-30, end=0, unit=Unit.days.string_value,
                                       key='range_picker',
                                       refresh_button={'is_show': True, 'button_name': 'Refresh',
+                                                      'refresh_date': -30,
                                                       'unit': Unit.days.string_value})
 
 if date_range_string is not None:
