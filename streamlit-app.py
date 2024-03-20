@@ -1,8 +1,7 @@
 #streamlit-app
 import pandas as pd
-import numpy as np
 import streamlit as st
-import datetime
+from streamlit_date_picker import date_range_picker, PickerType, Unit
 
 from st_aggrid import AgGrid
 # import boto3
@@ -28,15 +27,36 @@ def load_data():
     return df
 
 df = load_data
-  
-def df_filter(message, data):
-    dates_selection = st.sidebar.slider('%s' % (message),
-                               min_value = min(df['Cal. Due Date']),
-                               max_value = max(df['Cal. Due Date']),
-                               value =(min(df['Cal. Due Date']),max(df['Cal. Due Date'])))
-    mask = data['Date'].between(dates_selection)
-    filtered_df = data[mask].shape[0]
-    return filtered_df
+
+date_range_string = date_range_picker(picker_type=PickerType.date.string_value,
+                                      start=-30, end=0, unit=Unit.days.string_value,
+                                      key='range_picker',
+                                      refresh_button={'is_show': True, 'button_name': 'Refresh',
+                                                      'unit': Unit.days.string_value})
+
+if date_range_string is not None:
+    start_datetime = date_range_string[0]
+    end_datetime = date_range_string[1]
+    st.write(f"Date Range [{start_datetime}, {end_datetime}]")
+
+def date_range(df):
+     if start_datetime < end_datetime:
+        indexes = df.date_range(start=start_datetime, end=end_datetime, freq='D').index
+        if indexes.size > 0:
+             return df.loc[indexes]
+        else:
+             return []
+
+# def df_filter(message, data):
+#     dates_selection = st.sidebar.slider('%s' % (message),
+#                                min_value = min(df['Cal. Due Date']),
+#                                max_value = max(df['Cal. Due Date']),
+#                                value =(min(df['Cal. Due Date']),max(df['Cal. Due Date'])))
+#     mask = data['Date'].between(dates_selection)
+#     filtered_df = data[mask].shape[0]
+#     return filtered_df
+
+
 
 
 # def search(data, column, search_term):
@@ -70,7 +90,6 @@ def df_filter(message, data):
 
 # def date_time(data):
 #     if st.button(start_date > end_date):
-#        st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
 #        indexes = data.date_range(start=start_date, end=end_date).index
 #        if indexes.size > 0:
 #            return data.iloc[indexes]
@@ -80,18 +99,18 @@ def df_filter(message, data):
 #     else:
 #         st.error('Error: End date must fall after start date.')
           
-col2, col3, col4 = st.columns([20, 20, 20])
+# col2, col3, col4 = st.columns([20, 20, 20])
 
-with col2:
-    df_filter
+# with col2:
+#     df_filter
 
 buffer, col1 = st.columns([1,100])
 
 with col1:
-    if not data.empty:
-        AgGrid(df, height=500, editable=False, use_container_width=True)
-    else:
-        st.write('Did not find any item matching the critieria')
+        if date_range is not None:
+            df = AgGrid(data, height=500, editable=False, use_container_width=True)
+        else:
+            st.write('Did not find any item matching the critieria')
         
         
 
@@ -102,14 +121,14 @@ with col1:
 #     st.sidebar.button('Enter', type='primary')
 #     df = date_time(data)
 
-with col3:
-    key = st.sidebar.selectbox("Key",['Location', 'Type', 'Serial #', 'Description', 'Cal. Date',
-                                      'Cal. due Date', 'Comment', 'Owner'])
+# with col3:
+#     key = st.sidebar.selectbox("Key",['Location', 'Type', 'Serial #', 'Description', 'Cal. Date',
+#                                       'Cal. due Date', 'Comment', 'Owner'])
 
-with col4:
-    search_term = st.sidebar.text_input('Search')
-    if key != '' and search_term !='':
-        df = search(data, key, search_term) 
+# with col4:
+#     search_term = st.sidebar.text_input('Search')
+#     if key != '' and search_term !='':
+#         df = search(data, key, search_term) 
 
     # st.button.sidebar('Enter', type='primary')    
 
