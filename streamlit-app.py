@@ -1,7 +1,7 @@
 #streamlit-app
 import pandas as pd
 import streamlit as st
-from streamlit_date_picker import date_range_picker, PickerType, Unit
+from streamlit_date_picker import date_range_picker, PickerType, Unit, date_picker
 
 from st_aggrid import AgGrid
 # import boto3
@@ -31,9 +31,9 @@ df = load_data
 date_range_string = date_range_picker(picker_type=PickerType.date.string_value,
                                       start=-30, end=0, unit=Unit.days.string_value,
                                       key='range_picker',
-                                      refresh_button={'is_show': True, 'button_name': 'Refresh',
+                                      refresh_button={'is_show': True, 'button_name': 'Refresh last 30min',
                                                       'refresh_date': -30,
-                                                      'unit': Unit.days.string_value})
+                                                        })
 
 if date_range_string is not None:
     start_datetime = date_range_string[0]
@@ -43,10 +43,10 @@ if date_range_string is not None:
 def date_range(df):
      if start_datetime < end_datetime:
         indexes = df.date_range(start=start_datetime, end=end_datetime, freq='D').index
-        if indexes.size > 0:
-             return df.loc[indexes]
-        else:
-             return []
+        return df.loc[indexes]
+     else:
+          return []
+    
         
 # date_string = date_range_picker(picker_type=PickerType.time.string_value, value=0, unit=Unit.days.string_value,
 #                           key='date_picker')
@@ -111,7 +111,7 @@ def date_range(df):
 buffer, col1 = st.columns([1,100])
 
 with col1:
-        if date_range_string is not None:
+        if date_range is not None:
             df = AgGrid(data, height=500, editable=False, use_container_width=True)
         else:
             st.write('Did not find any item matching the critieria')

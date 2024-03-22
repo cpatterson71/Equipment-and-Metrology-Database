@@ -1,0 +1,48 @@
+import streamlit as st
+import pandas as pd
+
+# months for selectbox options.
+MONTHS = ('Gener', 'Febrer', 'Març',
+          'Abril', 'Maig', 'Juny',
+          'Juliol', 'Agost', 'Setembre',
+          'Octubre', 'Novembre', 'Decembre')
+
+# Create a sample dict for dataframe
+# data = {
+    # 'Data de la classe': ['2022-09-27', '2022-09-28',
+                        #   '2022-09-29', '2022-10-03',
+                        #   '2022-10-04']
+# }
+
+# Build df.
+# df = pd.DataFrame(data)
+
+df = pd.read_csv('s.csv')
+st.dataframe(df)
+
+# Convert date string to datetime and put it in DateTime column.
+df['DateTime'] = pd.to_datetime(df['Data de la classe'])
+
+# Create MonthNumber column based from DateTime column.
+df["MonthNumber"] = df["DateTime"].dt.month
+st.dataframe(df)
+
+# Add streamlit selectbox.
+sel_month = st.sidebar.selectbox(label="Selecciona el mes", options=MONTHS)
+
+# Get the month index based from selected month.
+# We add 1 since index starts at 0 but our january starts at 1.
+month_index = MONTHS.index(sel_month) + 1
+
+# Execute query.
+st.write('#### Query result')
+dfSelection = df.query(
+    "MonthNumber == @month_index"
+)
+
+# Show data frame with filters applied.
+st.table(dfSelection)
+
+# Show only the Data de la classe column.
+dfSelection_classe = dfSelection[['Data de la classe']]
+st.table(dfSelection_classe)
