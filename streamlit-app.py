@@ -1,9 +1,10 @@
 #streamlit-app
 import pandas as pd
 import streamlit as st
-from streamlit_date_picker import date_range_picker, PickerType, Unit, date_picker
+import datetime  as dt
 
 from st_aggrid import AgGrid
+
 # import boto3
 
 # s3 = boto3.client('s3',
@@ -15,106 +16,69 @@ from st_aggrid import AgGrid
 # excel = pd.read_excel('Equipment_and_Metrology_Database.xlsx', index_col=False)
 # temp = pd.DataFrame(excel)
 
+Months =('January', 'February', 'March', 'April', 'May', 'June',
+         'July', 'August', 'September', 'October', 'November', 'December')
+
+Search_Box = ('Location', 'Type', 'Serial #', 'Description', 'Cal_Date',
+            'Cal_Due_Date', 'Owner')
+
 st.set_page_config(layout='wide')
 st.title('Equipment and Metrology Database')
 
 file = 'Equipment_and_Metrology_Database.xlsx'
 data = pd.read_excel(file, index_col=False)
 
+temp = pd.DataFrame(data)
+
+tests = temp['Cal_Date'].astype(str)
+dates = []
+for test in tests:
+     dates.append(test[:-9])
+temp['Cal_Date'] = dates
+
+date = temp['Cal_Due_Date'].astype(str)
+why = []
+for date in dates:
+     why.append(date[:-9])
+temp['Cal_Due_Date'] = why
+
+temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
+         'Owner', 'Comment']]
+
+temp['Cal_Date'] = pd.to_datetime(temp['Cal_Date'], errors='ignore')
+temp['Cal_Due_Date'] = pd.to_datetime(temp['Cal_Due_Date'], errors='ignore')
+temp['MonthNumber'] = temp['Cal_Due_Date'].dt.month
+st.dataframe(temp)
+
 @st.cache
 def load_data():
-    df = data
+    df = temp
     return df
 
 df = load_data
 
-date_range_string = date_range_picker(picker_type=PickerType.date.string_value,
-                                      start=-30, end=0, unit=Unit.days.string_value,
-                                      key='range_picker',
-                                      refresh_button={'is_show': True, 'button_name': 'Refresh last 30min',
-                                                      'refresh_date': -30,
-                                                        })
+sel_month = st.selectbox(label='Select Month', options=Months)
+months_index = Months.index(sel_month) +1 
 
-if date_range_string is not None:
-    start_datetime = date_range_string[0]
-    end_datetime = date_range_string[1]
-    st.write(f"Date Range [{start_datetime}, {end_datetime}]")
+st.write('#### Query Result')
+dfSelection = df.query("MonthNumber === @month_index")
 
-def date_range(df):
-     if start_datetime < end_datetime:
-        indexes = df.date_range(start=start_datetime, end=end_datetime, freq='D').index
-        return df.loc[indexes]
-     else:
-          return []
-    
-        
-# date_string = date_range_picker(picker_type=PickerType.time.string_value, value=0, unit=Unit.days.string_value,
-#                           key='date_picker')
-
-
-# if date_string is not None:
-#     st.write('Date Picker: ', date_string)
-
-# def df_filter(message, data):
-#     dates_selection = st.sidebar.slider('%s' % (message),
-#                                min_value = min(df['Cal. Due Date']),
-#                                max_value = max(df['Cal. Due Date']),
-#                                value =(min(df['Cal. Due Date']),max(df['Cal. Due Date'])))
-#     mask = data['Date'].between(dates_selection)
-#     filtered_df = data[mask].shape[0]
-#     return filtered_df
-# def search(data, column, search_term):
-#     if column =='Owner':
-#         search_term = (search_term)
-
-#     indexes = data.loc[data[column].isin([search_term])].index
-#     if indexes.size > 0:
-#         return data.iloc[indexes]
-#     else:
-#         return []
-
-# filtered_df = df_filter('Move sliders to filter data', df)
-# filtered_df.sort_values(by='Date', inplace=True)
-
-# ss = st.session_state
-# ss.analysis = {"filter":{}}
-
-# def updateDateRange():
-#     if 'dateRange' is ss and isinstance(ss.dateRange, tuple) and len(ss.dateRange)==2:
-#         st.write("##########")
-#         ss["analysis"]["filter"]['dateRange'] = (ss.dateRange[0].strftime("%YYYY-%DD-%MM"), ss.dateRange[1].strftime("%YYYY-%DD-%MM"))
-
-# base = datetime.date(2022,7,1)
-# dates = [base + datetime.timedelta(days=x) for x in range(5)]
-
-# if "dateRange" not in ss:
-#     ss.defaultDateRange = (dates[0], dates[-1])
-
-
-
-# def date_time(data):
-#     if st.button(start_date > end_date):
-#        indexes = data.date_range(start=start_date, end=end_date).index
-#        if indexes.size > 0:
-#            return data.iloc[indexes]
-#        else:
-#            return []
-       
-#     else:
-#         st.error('Error: End date must fall after start date.')
-          
-# col2, col3, col4 = st.columns([20, 20, 20])
-
-# with col2:
-#     df_filter
-
-buffer, col1 = st.columns([1,100])
+col1, col2 = st.columns([1,100])
 
 with col1:
-        if date_range is not None:
-            df = AgGrid(data, height=500, editable=False, use_container_width=True)
-        else:
-            st.write('Did not find any item matching the critieria')
+     sel_month
+
+with col2:
+    if not sel_month.empty:
+        AgGrid(dfSelection, height=500, editable=False, use_container_width=True)
+    else:
+        st.write('Did not find any item matching the critieria')
+     
+# with col1:
+#         if date_range is not None:
+#             df = AgGrid(data, height=500, editable=False, use_container_width=True)
+#         else:
+#             st.write('Did not find any item matching the critieria')
         
         
 
