@@ -25,30 +25,32 @@ Search_Box = ('Location', 'Type', 'Serial #', 'Description', 'Cal_Date',
 st.set_page_config(layout='wide')
 st.title('Equipment and Metrology Database')
 
-file = 'Equipment_and_Metrology_Database.xlsx'
-data = pd.read_excel(file, index_col=False)
+file = 'Equipment_and_Metrology_Database.csv'
+data = pd.read_csv(file, index_col=False)
 
 temp = pd.DataFrame(data)
 
-tests = temp['Cal_Date'].astype(str)
-dates = []
-for test in tests:
-     dates.append(test[:-9])
-temp['Cal_Date'] = dates
+# tests = temp['Cal_Date'].astype(str)
+# dates = []
+# for test in tests:
+#      dates.append(test[:-9])
+# temp['Cal_Date'] = dates
 
-date = temp['Cal_Due_Date'].astype(str)
-why = []
-for date in dates:
-     why.append(date[:-9])
-temp['Cal_Due_Date'] = why
+# date = temp['Cal_Due_Date'].astype(str)
+# why = []
+# for date in dates:
+#      why.append(date[:-9])
+# temp['Cal_Due_Date'] = why
 
-temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
-         'Owner', 'Comment']]
+# temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
+#          'Owner', 'Comment']]
 
-temp['Cal_Date'] = pd.to_datetime(temp['Cal_Date'], errors='ignore')
-temp['Cal_Due_Date'] = pd.to_datetime(temp['Cal_Due_Date'], errors='ignore')
-temp['MonthNumber'] = temp['Cal_Due_Date'].dt.month
-st.dataframe(temp)
+# temp['Cal_Date'] = pd.to_datetime(temp['Cal_Date'], format='mixed')
+
+# temp['Cal_Due_Date'] = pd.to_datetime(temp['Cal_Due_Date'], format='mixed')
+
+# temp['MonthNumber'] = temp['Cal_Due_Date'].dt.month
+# st.dataframe(temp)
 
 @st.cache
 def load_data():
@@ -57,31 +59,20 @@ def load_data():
 
 df = load_data
 
-sel_month = st.selectbox(label='Select Month', options=Months)
-months_index = Months.index(sel_month) +1 
-
-st.write('#### Query Result')
-dfSelection = df.query("MonthNumber === @month_index")
-
-col1, col2 = st.columns([1,100])
+col1, col2 = st.columns([100,100])
 
 with col1:
-     sel_month
+    sel_month =  st.selectbox(label='Select Month', options=Months)
+    months_index = Months.index(sel_month) +1 
+
+st.write('#### Query Result')
 
 with col2:
-    if not sel_month.empty:
-        AgGrid(dfSelection, height=500, editable=False, use_container_width=True)
+    if not months_index.empty:
+        AgGrid(df, height=500, editable=False, use_container_width=True)
     else:
         st.write('Did not find any item matching the critieria')
-     
-# with col1:
-#         if date_range is not None:
-#             df = AgGrid(data, height=500, editable=False, use_container_width=True)
-#         else:
-#             st.write('Did not find any item matching the critieria')
-        
-        
-
+    
 # with col2:
 #     start_date = st.sidebar.date_input('Start Date')
 #     end_date = st.sidebar.date_input('End Date')
