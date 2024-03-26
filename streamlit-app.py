@@ -1,8 +1,7 @@
 #streamlit-app
 import pandas as pd
 import streamlit as st
-import datetime  as dt
-
+import datetime as dt
 from st_aggrid import AgGrid
 
 # import boto3
@@ -25,29 +24,32 @@ Search_Box = ('Location', 'Type', 'Serial #', 'Description', 'Cal_Date',
 st.set_page_config(layout='wide')
 st.title('Equipment and Metrology Database')
 
-file = 'Equipment_and_Metrology_Database.csv'
-data = pd.read_csv(file, index_col=False)
+file = 'Equipment_and_Metrology_Database.xlsx'
+data = pd.read_excel(file, index_col=False)
 
 temp = pd.DataFrame(data)
 
-# tests = temp['Cal_Date'].astype(str)
-# dates = []
-# for test in tests:
-#      dates.append(test[:-9])
-# temp['Cal_Date'] = dates
+tests = temp['Cal_Date'].astype(str)
+dates = []
+for test in tests:
+     dates.append(test[:-9])
+temp['Cal_Date'] = dates
 
-# date = temp['Cal_Due_Date'].astype(str)
-# why = []
-# for date in dates:
-#      why.append(date[:-9])
-# temp['Cal_Due_Date'] = why
+date = temp['Cal_Due_Date'].astype(str)
+why = []
+for date in dates:
+     why.append(date[:-9])
+temp['Cal_Due_Date'] = why
 
-# temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
-#          'Owner', 'Comment']]
+temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
+         'Owner', 'Comment']]
 
-# temp['Cal_Date'] = pd.to_datetime(temp['Cal_Date'], format='mixed')
+# def new_func(temp):
+#     temp['Cal_Date'] = pd.to_datetime(temp['Cal_Date'], format='%Y-%m-%d')
 
-# temp['Cal_Due_Date'] = pd.to_datetime(temp['Cal_Due_Date'], format='mixed')
+#     temp['Cal_Due_Date'] = pd.to_datetime(temp['Cal_Due_Date'], format='%Y-%m-%d')
+
+# new_func(temp)
 
 # temp['MonthNumber'] = temp['Cal_Due_Date'].dt.month
 # st.dataframe(temp)
@@ -59,16 +61,24 @@ def load_data():
 
 df = load_data
 
+
 col1, col2 = st.columns([100,100])
 
 with col1:
-    sel_month =  st.selectbox(label='Select Month', options=Months)
-    months_index = Months.index(sel_month) +1 
+    min = st.date_input('Beginning Date', dt.date(2024, 1, 1), format='YYYY-MM-DD')
+    min = dt.datetime.strptime(min).date()
+
+    max = st.date_input('End Date', dt.date(2024, 1, 1), format='YYYY-MM-DD')
+    max = dt.datetime.strptime(max).date()
+                        
+    df_filtered = temp[temp['Cal_Due_Date'].dt.strftime(date_format='%Y-%m-%d').between(min, max)]
+    # df.query("Cal_Due_Date" >= min and "Cal_Due_Date" < max)
+    # temp.loc[(temp['Cal_Due_Date'] >= min) & (temp['Cal_Due_Date'] >= max)]
 
 st.write('#### Query Result')
 
 with col2:
-    if not months_index.empty:
+    if not df_filtered.empty:
         AgGrid(df, height=500, editable=False, use_container_width=True)
     else:
         st.write('Did not find any item matching the critieria')
