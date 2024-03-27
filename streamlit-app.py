@@ -2,6 +2,7 @@
 import pandas as pd
 import streamlit as st
 import datetime as dt
+from dateutil.relativedelta import *
 from st_aggrid import AgGrid
 
 # import boto3
@@ -41,6 +42,21 @@ for date in dates:
      why.append(date[:-9])
 temp['Cal_Due_Date'] = why
 
+temp['Cal_Due_Date'] = dt.date(temp['Cal_Due_Date'], format='%Y-%m-%d')
+temp['Cal_Date'] = dt.date(temp['Cal_Date'], format='%Y-%m-%d')
+temp.info()
+# beer = temp['Cal_Date'].astype(str)
+# whisky = []
+# for beer in whisky:
+#         whisky.pd.to_datetime(temp['Cal_Date'], format='yearfirst')
+# temp['Cal_Date'] = whisky
+
+# car = temp['Cal_Due_Date'].astype(str)
+# cycle = []
+# for car in cycle:
+#      cycle.pd.to_datetime(temp['Cal_Due_Date'], format='yearfirst')
+# temp['Cal_Due_Date'] = cycle
+
 temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
          'Owner', 'Comment']]
 
@@ -62,24 +78,25 @@ def load_data():
 df = load_data
 
 
-col1, col2 = st.columns([100,100])
+buffer, col1, col2 = st.columns([50,100])
 
 with col1:
-    min = st.date_input('Beginning Date', dt.date(2024, 1, 1), format='YYYY-MM-DD')
-    min = dt.datetime.strptime(min).date()
+    beg_date = st.date_input('Beginning Date', dt.date(2024, 1, 1), format='YYYY-MM-DD')
+    end_date = st.date_input('End Date', dt.date(2024, 1, 1), format='YYYY-MM-DD')
 
-    max = st.date_input('End Date', dt.date(2024, 1, 1), format='YYYY-MM-DD')
-    max = dt.datetime.strptime(max).date()
+    # min = pd.to_datetime(min)
+    # max = pd.to_datetime(max)
+
+    filtered_dates = temp.loc[(temp['Cal_Due_Date'] > beg_date) & (temp['Cal_Due_Date'] <= end_date)]
                         
-    df_filtered = temp[temp['Cal_Due_Date'].dt.strftime(date_format='%Y-%m-%d').between(min, max)]
+    # temp[temp['Cal_Due_Date'].dt.strftime(date_format='%Y-%m-%d').between(min, max)]
     # df.query("Cal_Due_Date" >= min and "Cal_Due_Date" < max)
-    # temp.loc[(temp['Cal_Due_Date'] >= min) & (temp['Cal_Due_Date'] >= max)]
 
 st.write('#### Query Result')
 
 with col2:
-    if not df_filtered.empty:
-        AgGrid(df, height=500, editable=False, use_container_width=True)
+    if not filtered_dates.empty:
+        AgGrid(temp, height=500, editable=False, use_container_width=True)
     else:
         st.write('Did not find any item matching the critieria')
     
