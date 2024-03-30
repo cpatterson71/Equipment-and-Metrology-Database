@@ -2,7 +2,6 @@
 import pandas as pd
 import streamlit as st
 import datetime as dt
-from dateutil.relativedelta import *
 from st_aggrid import AgGrid
 
 # import boto3
@@ -44,32 +43,19 @@ temp['Cal_Due_Date'] = why
 
 temp['Cal_Due_Date'] = dt.date(temp['Cal_Due_Date'], format='%Y-%m-%d')
 temp['Cal_Date'] = dt.date(temp['Cal_Date'], format='%Y-%m-%d')
-temp.info()
-# beer = temp['Cal_Date'].astype(str)
-# whisky = []
-# for beer in whisky:
-#         whisky.pd.to_datetime(temp['Cal_Date'], format='yearfirst')
-# temp['Cal_Date'] = whisky
-
-# car = temp['Cal_Due_Date'].astype(str)
-# cycle = []
-# for car in cycle:
-#      cycle.pd.to_datetime(temp['Cal_Due_Date'], format='yearfirst')
-# temp['Cal_Due_Date'] = cycle
 
 temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
          'Owner', 'Comment']]
 
-# def new_func(temp):
-#     temp['Cal_Date'] = pd.to_datetime(temp['Cal_Date'], format='%Y-%m-%d')
+def search(data, column, search_term):
+    if column == 'Description':
+        search_term = (search_term)
 
-#     temp['Cal_Due_Date'] = pd.to_datetime(temp['Cal_Due_Date'], format='%Y-%m-%d')
-
-# new_func(temp)
-
-# temp['MonthNumber'] = temp['Cal_Due_Date'].dt.month
-# st.dataframe(temp)
-
+        indexes = data.loc[data[column].isin([search_term])].index
+        if indexes.size > 0:
+            return data.iloc[indexes]
+        else:
+            return []
 @st.cache
 def load_data():
     df = temp
@@ -77,51 +63,24 @@ def load_data():
 
 df = load_data
 
-
-buffer, col1, col2 = st.columns([50,100])
+buffer, col1, col2, col3 = st.columns([1, 20, 60])
 
 with col1:
-    beg_date = st.date_input('Beginning Date', dt.date(2024, 1, 1), format='YYYY-MM-DD')
-    end_date = st.date_input('End Date', dt.date(2024, 1, 1), format='YYYY-MM-DD')
+    key = st.sidebar.selectbox["key",  ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
+         'Owner', 'Comment']]
 
-    # min = pd.to_datetime(min)
-    # max = pd.to_datetime(max)
-
-    filtered_dates = temp.loc[(temp['Cal_Due_Date'] > beg_date) & (temp['Cal_Due_Date'] <= end_date)]
+    with col2:
+        search_term = st.sidebar.text("Search")
+        if key != '' and search_term != '':
+            df = search(data, key, search_term)
                         
     # temp[temp['Cal_Due_Date'].dt.strftime(date_format='%Y-%m-%d').between(min, max)]
     # df.query("Cal_Due_Date" >= min and "Cal_Due_Date" < max)
 
-st.write('#### Query Result')
 
-with col2:
-    if not filtered_dates.empty:
+with col3:
+    if not df.empty:
         AgGrid(temp, height=500, editable=False, use_container_width=True)
     else:
         st.write('Did not find any item matching the critieria')
     
-# with col2:
-#     start_date = st.sidebar.date_input('Start Date')
-#     end_date = st.sidebar.date_input('End Date')
-
-#     st.sidebar.button('Enter', type='primary')
-#     df = date_time(data)
-
-# with col3:
-#     key = st.sidebar.selectbox("Key",['Location', 'Type', 'Serial #', 'Description', 'Cal. Date',
-#                                       'Cal. due Date', 'Comment', 'Owner'])
-
-# with col4:
-#     search_term = st.sidebar.text_input('Search')
-#     if key != '' and search_term !='':
-#         df = search(data, key, search_term) 
-
-    # st.button.sidebar('Enter', type='primary')    
-
-# buffer, col1 = st.columns([1,100])
-
-# with col1 :
-#     if not data.empty:
-#         AgGrid(data, height=500, editable=False, use_container_width=True)
-#     else:
-#         st.write('Did not find any item matching the critieria')
