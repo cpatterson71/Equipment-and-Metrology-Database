@@ -15,8 +15,6 @@ from st_aggrid import AgGrid
 # excel = pd.read_excel('Equipment_and_Metrology_Database.xlsx', index_col=False)
 # temp = pd.DataFrame(excel)
 
-Months =('January', 'February', 'March', 'April', 'May', 'June',
-         'July', 'August', 'September', 'October', 'November', 'December')
 
 Search_Box = ('Location', 'Type', 'Serial #', 'Description', 'Cal_Date',
             'Cal_Due_Date', 'Owner')
@@ -41,9 +39,6 @@ for date in dates:
      why.append(date[:-9])
 temp['Cal_Due_Date'] = why
 
-temp['Cal_Due_Date'] = dt.date(temp['Cal_Due_Date'], format='%Y-%m-%d')
-temp['Cal_Date'] = dt.date(temp['Cal_Date'], format='%Y-%m-%d')
-
 temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
          'Owner', 'Comment']]
 
@@ -58,29 +53,25 @@ def search(data, column, search_term):
             return []
 @st.cache
 def load_data():
-    df = temp
+    df = data
     return df
 
 df = load_data
 
-buffer, col1, col2, col3 = st.columns([1, 20, 60])
+buffer, col2, col3 = st.columns([1, 20, 60])
+
+with col2:
+    key = st.sidebar.selectbox("Key",Search_Box)
+with col3:
+    search_term = st.sidebar.text_input("Search")
+    if key != '' and search_term != '':
+        df = search(data, key, search_term)
+
+buffer, col1 = st.columns([1, 100])
 
 with col1:
-    key = st.sidebar.selectbox["key",  ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
-         'Owner', 'Comment']]
-
-    with col2:
-        search_term = st.sidebar.text("Search")
-        if key != '' and search_term != '':
-            df = search(data, key, search_term)
-                        
-    # temp[temp['Cal_Due_Date'].dt.strftime(date_format='%Y-%m-%d').between(min, max)]
-    # df.query("Cal_Due_Date" >= min and "Cal_Due_Date" < max)
-
-
-with col3:
-    if not df.empty:
-        AgGrid(temp, height=500, editable=False, use_container_width=True)
+    if not temp.empty:
+        AgGrid(df, height=500, editable=False, use_container_width=True)
     else:
-        st.write('Did not find any item matching the critieria')
+        st.write('Did not find any material matching the criteria')
     
