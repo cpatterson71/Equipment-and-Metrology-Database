@@ -16,14 +16,14 @@ from st_aggrid import AgGrid
 # temp = pd.DataFrame(excel)
 
 
-Search_Box = ('Location', 'Type', 'Serial #', 'Description', 'Cal_Date',
+Search_Box = ('ID #', 'Location', 'Type', 'Serial #', 'Description', 'Cal_Date',
             'Cal_Due_Date', 'Owner')
 
 st.set_page_config(layout='wide')
 st.title('Equipment and Metrology Database')
 
-file = 'Equipment_and_Metrology_Database.xlsx'
-data = pd.read_excel(file, index_col=False)
+file = 'Equipment_Metrology_Database.csv'
+data = pd.read_csv(file, index_col=False)
 
 temp = pd.DataFrame(data)
 
@@ -53,7 +53,7 @@ def search(data, column, search_term):
             return []
 @st.cache
 def load_data():
-    df = data
+    df = temp
     return df
 
 df = load_data
@@ -71,7 +71,7 @@ buffer, col1 = st.columns([1, 100])
 
 with col1:
     if not temp.empty:
-        AgGrid(df, height=500, editable=False, use_container_width=True)
+        AgGrid(temp, height=500, editable=False, use_container_width=True)
     else:
         st.write('Did not find any material matching the criteria')
     
