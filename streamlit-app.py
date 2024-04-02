@@ -1,7 +1,7 @@
 #streamlit-app
 import pandas as pd
 import streamlit as st
-import datetime as dt
+import numpy as np
 from st_aggrid import AgGrid
 
 # import boto3
@@ -17,15 +17,18 @@ from st_aggrid import AgGrid
 
 
 Search_Box = ('ID #', 'Location', 'Type', 'Serial #', 'Description', 'Cal_Date',
-            'Cal_Due_Date', 'Owner')
+            'Cal_Due_Date', 'Owner', 'Comment')
 
 st.set_page_config(layout='wide')
 st.title('Equipment and Metrology Database')
 
-file = 'Equipment_Metrology_Database.csv'
-data = pd.read_csv(file, index_col=False)
+file = 'Equipment_and_Metrology_Database.xlsx'
+data = pd.read_excel(file, index_col=False)
 
 temp = pd.DataFrame(data)
+
+temp = temp.loc[:,['ID #', 'Location', 'Type', 'Serial #', 'Description', 'Cal_Date',
+            'Cal_Due_Date', 'Owner', 'Comment' ]]
 
 tests = temp['Cal_Date'].astype(str)
 dates = []
@@ -39,18 +42,6 @@ for date in dates:
      why.append(date[:-9])
 temp['Cal_Due_Date'] = why
 
-temp = temp.loc[:, ['Location', 'Type', 'Serial #', 'Description', 'Cal_Date', 'Cal_Due_Date',
-         'Owner', 'Comment']]
-
-def search(data, column, search_term):
-    if column == 'Description':
-        search_term = (search_term)
-
-        indexes = data.loc[data[column].isin([search_term])].index
-        if indexes.size > 0:
-            return data.iloc[indexes]
-        else:
-            return []
 @st.cache
 def load_data():
     df = temp
@@ -58,20 +49,31 @@ def load_data():
 
 df = load_data
 
+def search(data, column, search_term):
+    if column == 'ID #':
+        search_term = (search_term)
+
+        indexes = data.loc[data[column].isin([search_term])].index
+        if indexes.size > 0:
+            return data.iloc[indexes]
+        else:
+            return []
+        
 buffer, col2, col3 = st.columns([1, 20, 60])
 
 with col2:
     key = st.sidebar.selectbox("Key",Search_Box)
+
 with col3:
     search_term = st.sidebar.text_input("Search")
     if key != '' and search_term != '':
         df = search(data, key, search_term)
 
-buffer, col1 = st.columns([1, 100])
+buffer, col2 = st.columns([1, 100])
 
-with col1:
-    if not temp.empty:
-        AgGrid(temp, height=500, editable=False, use_container_width=True)
+with col2:
+    if not df.empty:
+        AgGrid(df, height=500, editable=False, use_container_width=True)
     else:
         st.write('Did not find any material matching the criteria')
     
