@@ -46,39 +46,39 @@ data = pd.read_csv(file, index_col=False)
 temp = pd.DataFrame(data)
 temp = temp.astype('str')
 
-AgGrid(temp, fit_columns_on_grid_load=True)
-
-# @st.cache
-# def load_data():
-#     df = temp
-#     return df
+@st.cache
+def load_data():
+    df = temp
+    return df
 
 df = load_data
 
+def search(data, column, search_term):
+    if column == 'Location':
+        search_term = (search_term)
 
-# def search(data, column, search_term):
-#     if column == 'ID_No':
-#         search_term = (search_term)
-
-#         indexes = data.loc[data[column].isin([search_term])].index
-#         if indexes.size > 0:
-#             return data.iloc[indexes]
-#         else:
-#             return []
+    indexes = data.loc[data[column].isin([search_term])].index
+    if indexes.size > 0:
+        return data.iloc[indexes]
+    else:
+        return []
         
-# buffer, col2, col3 = st.columns([1, 20, 60])
+buffer, col2, col3 = st.columns([1, 20, 60])
 
-# with col2:
-#     key = st.sidebar.selectbox("Key",Search_Box)
+with col2:
+    key = st.sidebar.selectbox("Key",Search_Box)
 
-# with col3:
-#     search_term = st.sidebar.text_input("Search")
-#     if key != '' and search_term != '':
-#         df = search(data, key, search_term)
+with col3:
+    search_term = st.sidebar.text_input("Search")
+    if key != '' and search_term != '':
+        df = search(data, key, search_term)
 
-# buffer, col2 = st.columns([1, 100])
+buffer, col2 = st.columns([1, 100])
 
-# with col2:
-#         AgGrid(df, height=500, use_container_width=True)
+with col2:
+    if  not df.empty:
+        AgGrid(df, height=500, use_container_width=True)
+    else:
+        st.write('Did not find any data matching criteria')
     
     
