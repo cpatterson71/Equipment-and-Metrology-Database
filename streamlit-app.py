@@ -77,5 +77,3 @@ with col2:
         AgGrid(df, height=500, use_container_width=True)
     else:
         st.write('Did not find any data matching criteria')
-    
-    
