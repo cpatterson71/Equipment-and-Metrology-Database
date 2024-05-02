@@ -68,8 +68,7 @@ def search(data, column, search_term):
 buffer, col2, col3 = st.columns([1, 20, 60])
 
 with col2:
-    key = st.sidebar.selectbox("Key",['ID_No', 'Location', 'Type', 'Serial_No', 'Description', 'Cal_Date',
-                                      'Cal_Due_Date'])
+    key = st.sidebar.selectbox("Key",['ID_No', 'Location', 'Type', 'Serial_No', 'Description', 'Cal_Date','Cal_Due_Date'])
 
 with col3:
     search_term = st.sidebar.text_input("Search")
