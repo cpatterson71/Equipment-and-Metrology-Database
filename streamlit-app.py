@@ -68,12 +68,12 @@ with col2:
 with col3:
     search_term = st.sidebar.text_input("Search")
     if key != '' and search_term != '':
-        df = search(data, key, search_term)
+        dead = search(data, key, search_term)
 
 buffer, col2 = st.columns([1, 100])
 
 with col2:
-    if  not df.empty:
-        AgGrid(df, height=500, use_container_width=True)
+    if  not dead.empty:
+        AgGrid(dead, height=500, use_container_width=True)
     else:
         st.write('Did not find any data matching criteria')
