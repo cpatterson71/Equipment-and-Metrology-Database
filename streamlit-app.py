@@ -72,7 +72,7 @@ with col2:
 with col3:
     search_term = st.sidebar.text_input("Search")
     if key != '' and search_term != '':
-        df = search(data, key, search_term)
+        data = search(data, key, search_term)
 
 buffer, col2 = st.columns([1, 100])
 
