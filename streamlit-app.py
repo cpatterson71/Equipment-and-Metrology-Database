@@ -45,8 +45,8 @@ temp = temp.astype('str')
 
 @st.cache
 def load_data():
-    df = temp
-    return df
+    dead = data
+    return dead
 
 dead = load_data
 
