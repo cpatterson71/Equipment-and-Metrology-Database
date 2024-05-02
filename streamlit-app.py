@@ -78,6 +78,6 @@ buffer, col2 = st.columns([1, 100])
 
 with col2:
     if not data.empty:
-        AgGrid(df, height=500, use_container_width=True)
+        AgGrid(data, height=500, use_container_width=True)
     else:
         st.write('Did not find any person matching the criteria')
