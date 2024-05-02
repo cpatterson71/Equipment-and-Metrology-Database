@@ -47,7 +47,7 @@ def load_data():
     df = pd.read_csv(file, index_col=False)
     return df
 
-    df = load_data
+df = load_data
 
 # In[ ]:
 
