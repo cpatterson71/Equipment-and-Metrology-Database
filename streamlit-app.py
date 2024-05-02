@@ -40,40 +40,46 @@ Search_Box = ('ID_No', 'Location', 'Type','Serial_No', 'Description', 'Cal_Date'
 
 file='Equipment_and_Metrology_Database.csv'
 data = pd.read_csv(file, index_col=False)
-temp = pd.DataFrame(data)
-temp = temp.astype('str')
+
 
 @st.cache
 def load_data():
-    df = temp
+    df = pd.read_csv(file, index_col=False)
     return df
 
 df = load_data
 
-def search(temp, column, search_term):
+# In[ ]:
+
+
+def search(data, column, search_term):
     if column == 'Location':
         search_term = (search_term)
-
-    indexes = temp.loc[temp[column].isin([search_term])].index
+        
+    indexes = data.loc[data[column].isin([search_term])].index
     if indexes.size > 0:
-        return temp.iloc[indexes]
+        return data.iloc[indexes]
     else:
         return []
-        
+
+
+# In[ ]:
+
 buffer, col2, col3 = st.columns([1, 20, 60])
 
 with col2:
-    key = st.sidebar.selectbox("Key",Search_Box)
+    key = st.sidebar.selectbox("Key",['ID_No', 'Location', 'Type', 'Serial_No', 'Description', 'Cal_Date',
+                                      'Cal_Due_Date'])
 
 with col3:
     search_term = st.sidebar.text_input("Search")
     if key != '' and search_term != '':
-        df = search(temp, key, search_term)
+        df = search(data, key, search_term)
 
 buffer, col2 = st.columns([1, 100])
 
 with col2:
-    if  not df.empty:
-        AgGrid(df, height=500, use_container_width=True)
+    if not df.empty:
+        AgGrid(df,height=500, use_container_width=True)
     else:
-        st.write('Did not find any data matching criteria')
+        st.write('Did not find any person matching the criteria')
