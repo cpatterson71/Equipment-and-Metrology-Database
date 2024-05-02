@@ -39,6 +39,7 @@ Search_Box = ('ID_No', 'Location', 'Type','Serial_No', 'Description', 'Cal_Date'
             'Cal_Due_Date')
 
 file='Equipment_and_Metrology_Database.csv'
+data = pd.read_csv(file, index_col=False)
 
 @st.cache
 def load_data():
@@ -76,7 +77,7 @@ with col3:
 buffer, col2 = st.columns([1, 100])
 
 with col2:
-    if not df.empty:
+    if not data.empty:
         AgGrid(df, height=500, use_container_width=True)
     else:
         st.write('Did not find any person matching the criteria')
