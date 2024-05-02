@@ -3,3 +3,4 @@ streamlit
 numpy
 st_aggrid
 boto3
+python
