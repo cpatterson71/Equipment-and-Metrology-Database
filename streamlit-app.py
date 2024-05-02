@@ -39,8 +39,6 @@ Search_Box = ('ID_No', 'Location', 'Type','Serial_No', 'Description', 'Cal_Date'
             'Cal_Due_Date')
 
 file='Equipment_and_Metrology_Database.csv'
-data = pd.read_csv(file, index_col=False)
-
 
 @st.cache
 def load_data():
