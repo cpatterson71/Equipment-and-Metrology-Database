@@ -1,6 +1,6 @@
-requirements
-streamlit
+pandas
 numpy
-st_aggrid
+streamlit
+openpyxl
+streamlit-aggrid
 boto3
-python
