@@ -1,15 +1,15 @@
-#streamlit-app
+#streamlit-app.py
 import pandas as pd
 import streamlit as st
 import numpy as np
 from st_aggrid import AgGrid
 import boto3
 
-s3 = boto3.client('s3',
-                  aws_access_key_id = 'AKIASCPKVVLRRR24MAEI',
-                  aws_secret_access_key = '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'
-                    )
-s3.download_file('carldata', 'Equipment_and_Metrology_Database.xlsx', 'Equipment_and_Metrology_Database.xlsx')
+# s3 = boto3.client('s3',
+#                   aws_access_key_id = 'AKIASCPKVVLRRR24MAEI',
+#                   aws_secret_access_key = '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'
+#                     )
+# s3.download_file('carldata', 'Equipment_and_Metrology_Database.xlsx', 'Equipment_and_Metrology_Database.xlsx')
 
 file = 'Equpment_and_Metrology_Database.xlsx'
 excel = pd.read_excel('Equipment_and_Metrology_Database.xlsx', index_col=False)
