@@ -48,7 +48,7 @@ def load_data():
     df = temp
     return df
 
-df = load_data
+dead = load_data
 
 def search(data, column, search_term):
     if column == 'Location':
