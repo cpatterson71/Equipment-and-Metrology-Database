@@ -1,0 +1,5 @@
+requirements
+streamlit
+numpy
+st_aggrid
+boto3
